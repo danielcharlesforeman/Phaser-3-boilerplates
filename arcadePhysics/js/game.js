@@ -78,12 +78,9 @@ gameScene.create = function () {
     player.score = this.add.text(1000 - (32 * 2), 50, '0', {
         fontFamily: 'monospace',
         fontSize: '32px',
-        fill: '#0FF'
+        fill: '#000'
     });
     player.value = 0;
-
-    
-
 }
 
 gameScene.update = function () {
@@ -115,11 +112,11 @@ gameScene.update = function () {
 function startGame() {
     gamemode = true;
     //music.play();
-    settings.startGameMenu.style.display = "none";
+    //settings.startGameMenu.style.display = "none";
 }
 
 function resetGame() {
     gamemode = false;
-    settings.startGameMenu.style.display = "block";
+    //settings.startGameMenu.style.display = "block";
 }
 
