@@ -2,6 +2,7 @@ var gameScene = new Phaser.Scene('game');
 var music, bounce;
 
 var settings = {
+    gamemode: false,
     width: 2000,
     height: 1125,
     lives: 3,
@@ -10,7 +11,7 @@ var settings = {
     scoreId: null,
     highscore: null,
     highscoreId: null,
-    gravity: 0,
+    gravity: 150,
     physicsDebug: true,
     startGameMenu: null,
     startGameMenuButton: null
@@ -18,7 +19,7 @@ var settings = {
 
 settings.startGameMenu = document.getElementById('startMenu');
 settings.startGameMenuButton = document.querySelector('#startMenu button');
-settings.startGameMenuButton.addEventListener('click', startGame() );
+settings.startGameMenuButton.addEventListener('click', startGame );
 
 var config = {
     type: Phaser.CANVAS,
@@ -67,27 +68,26 @@ gameScene.create = function () {
     particles = this.add.particles('particle');
     emitter = particles.createEmitter();
     emitter.setSpeed(15);
-    //emitter.setBlendMode(Phaser.BlendModes.ADD);
     emitter.minParticleScale = 0.15;
     emitter.maxParticleScale = 0.35;
 
     player = this.physics.add.sprite(50, 1125 / 2, 'player');
     player.setOrigin(0.5);
-    //this.physics.add.existing(player);
-    player.body.immovable = true;
-    player.score = this.add.text(1000 - (32 * 2), 50, '0', {
-        fontFamily: 'monospace',
-        fontSize: '32px',
-        fill: '#000'
-    });
-    player.value = 0;
+    player.body.collideWorldBounds=true;
+    player.body.body.bounce.setTo(0.9, 0.9);
+    
+    enemy = this.physics.add.sprite( Math.random() * settings.width, Math.random() * settings.height, 'enemy');
+    enemy.setOrigin(0.5);
+    enemy.body.collideWorldBounds=true;
+    enemy.body.bounce.setTo(0.9, 0.9);
+
 }
 
 gameScene.update = function () {
     
     emitter.setPosition(player.x, player.y);
 
-    if (gamemode == true) {
+    if ( settings.gamemode == true ) {
 
         if (this.cursorKeys.up.isDown) {
             player.y -= 7;
@@ -110,13 +110,13 @@ gameScene.update = function () {
 }
 
 function startGame() {
-    gamemode = true;
+    settings.gamemode = true;
     //music.play();
-    //settings.startGameMenu.style.display = "none";
+    settings.startGameMenu.style.display = "none";
 }
 
 function resetGame() {
-    gamemode = false;
+    settings.gamemode = false;
     //settings.startGameMenu.style.display = "block";
 }
 
