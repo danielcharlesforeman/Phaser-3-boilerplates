@@ -11,10 +11,11 @@ var settings = {
     scoreId: null,
     highscore: null,
     highscoreId: null,
-    gravity: 150,
+    gravity: 125,
     physicsDebug: true,
     startGameMenu: null,
-    startGameMenuButton: null
+    startGameMenuButton: null,
+    playerSpeed: 7,
 }
 
 settings.startGameMenu = document.getElementById('startMenu');
@@ -45,10 +46,10 @@ gameScene.init = function () {
 
 gameScene.preload = function () {
     
-    this.load.audio('music', 'assets/music/Symphony.mp3');
+    this.load.audio('music', 'assets/music/music.ogg');
     this.load.audio('bounce', 'assets/sound/bounce.wav');
     
-    this.load.image('backdrop', 'assets/sprites/backdrop.png');
+    this.load.image('backdrop', 'assets/sprites/backdrop_dark.png');
     this.load.image('particle', 'assets/sprites/particle.png');
     this.load.image('player', 'assets/sprites/player.png');
     this.load.image('enemy', 'assets/sprites/enemy.png');
@@ -73,13 +74,17 @@ gameScene.create = function () {
 
     player = this.physics.add.sprite(50, 1125 / 2, 'player');
     player.setOrigin(0.5);
-    player.body.collideWorldBounds=true;
-    player.body.body.bounce.setTo(0.9, 0.9);
+    player.setCollideWorldBounds(true);
+    player.setBounce( 0.5, 0.5 );
     
     enemy = this.physics.add.sprite( Math.random() * settings.width, Math.random() * settings.height, 'enemy');
+    enemy.x = 1000;
+    enemy.y = 550;
     enemy.setOrigin(0.5);
-    enemy.body.collideWorldBounds=true;
-    enemy.body.bounce.setTo(0.9, 0.9);
+    enemy.setVelocity( 350, 350 );
+    enemy.setBounce(1.05, 1.05);
+    enemy.setCollideWorldBounds(true);
+    enemy.setMaxVelocity( 5000, 5000 );
 
 }
 
@@ -90,29 +95,38 @@ gameScene.update = function () {
     if ( settings.gamemode == true ) {
 
         if (this.cursorKeys.up.isDown) {
-            player.y -= 7;
+            player.setVelocity( player.body.velocity.x, player.body.velocity.y-=settings.playerSpeed );
         }
 
         if (this.cursorKeys.down.isDown) {
-            player.y += 7;
+            player.setVelocity( player.body.velocity.x, player.body.velocity.y+=settings.playerSpeed );
         }
         
         if (this.cursorKeys.left.isDown) {
-            player.x -= 7;
+            player.setVelocity( player.body.velocity.x-=settings.playerSpeed, player.body.velocity.y );
         }
 
         if (this.cursorKeys.right.isDown) {
-            player.x += 7;
+            player.setVelocity( player.body.velocity.x+=settings.playerSpeed, player.body.velocity.y );
         }
+        
+        this.physics.world.collide(enemy, [player]);
+        
+        if ( enemy.body.blocked.up || enemy.body.blocked.down || enemy.body.blocked.left || enemy.body.blocked.right) {
+            bounce.play()
+        };
 
     }
+    
+    
 
 }
 
 function startGame() {
     settings.gamemode = true;
-    //music.play();
+    music.play();
     settings.startGameMenu.style.display = "none";
+    enemy.setVelocity( 350, 350 );
 }
 
 function resetGame() {
